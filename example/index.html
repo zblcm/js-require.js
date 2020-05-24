@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript" src="scripts/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../require.js"></script>
+<script>
+   /*
+	*
+	*    Define read_file of require. Here I use a server to provide resources, and use AJAX call to get them. You can define your own script provider if you can read local file using other methods.
+	*    path is the argument when you call require. For each path, the document will only be imported once.
+	* 
+	*/
+    Require.set_read_file(function(path, callback) {
+        let splits = path.split("/");
+        splits.shift(); // Remove first "." item in path.
+        let real_path = ["http://localhost/example/scripts"].concat(splits).join("/");
+
+        $.ajax({
+            url: real_path,
+            success: callback,
+            dataType: "text", // Be ware to set datatype to text, or your browser will run the script automatically.
+        });
+    });
+	
+	// Set a separator, which separate dependency graph and content of the script.
+    Require.set_separator("SEPARATE");
+	
+	// Require a entry script. This can only be done once. All of other scripts need to be inside of the required one.
+    Require.start_with("./testA.js", function(result) {
+        console.log("Index:", result);
+    });
+</script>
+
+</body>
+</html>
