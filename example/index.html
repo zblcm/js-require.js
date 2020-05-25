@@ -11,14 +11,10 @@
 	* 
 	*/
     Require.set_read_file(function(path, callback) {
-        let splits = path.split("/");
-        splits.shift(); // Remove first "." item in path.
-        let real_path = ["http://localhost/example/scripts"].concat(splits).join("/");
-
         $.ajax({
-            url: real_path,
+            url: window.location.href.split("?")[0].split("/").slice(0, -1).concat(path.split("/").slice(1)).join("/"),
             success: callback,
-            dataType: "text", // Be ware to set datatype to text, or your browser will run the script automatically.
+            dataType: "text",
         });
     });
 	
@@ -26,7 +22,7 @@
     Require.set_separator("SEPARATE");
 	
 	// Require a entry script. This can only be done once. All of other scripts need to be inside of the required one.
-    Require.start_with("./testA.js", function(result) {
+    Require.start_with("./scripts/testA.js", function(result) {
         console.log("Index:", result);
     });
 </script>
