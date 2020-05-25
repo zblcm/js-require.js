@@ -67,12 +67,11 @@ Require.Header = function(path) {
                 text_t = texts[1];
             }
             text_t = text_t.split("\n").map(line => "    " + line).join("\n");
-			
-			"use strict";
-			const require = function(path) {
-				return Require.internal_require(path, header).result;
-			};
-			text = text_h + "header.wait(function() { let module = {};" + text_t + "\nfor (let i in module.exports) header.result[i] = module.exports[i]; header.finish(); });\n//# sourceURL=Require[" + header.path + "]";
+            text = text_h + "header.wait(function() { let module = {};" + text_t + "\nfor (let i in module.exports) header.result[i] = module.exports[i]; header.finish(); });\n//# sourceURL=Require[" + header.path + "]";
+
+            // prepare the context of the eval.
+            "use strict";
+            const require = function(path) { return Require.internal_require(path, header).result; };
 
             eval(text);
         });
@@ -111,10 +110,4 @@ Require.start_with = function(path, callback) {
         callback(header_next.result);
         header.finish(); // actually this is useless.
     });
-};
-Require.run_script = function(text) {
-    let elt = document.createElement("script");
-    elt.type="text/javascript";
-    elt.innerHTML = text;
-    document.getElementsByTagName("head")[0].appendChild(elt);
 };
