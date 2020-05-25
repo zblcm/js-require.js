@@ -29,14 +29,16 @@ module.exports = {
 <script type="text/javascript" src="scripts/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="../require.js"></script>
 <script>
+    // Use a server to provide local documents.
     Require.set_read_file(function(path, callback) {
-        let splits = path.split("/");
-        splits.shift();
-        let real_path = ["http://localhost/example/scripts"].concat(splits).join("/");
-        $.ajax({ url: real_path, success: callback, dataType: "text" });
+        $.ajax({
+            url: window.location.href.split("?")[0].split("/").slice(0, -1).concat(path.split("/").slice(1)).join("/"),
+            success: callback,
+            dataType: "text",
+        });
     });
     Require.set_separator("SEPARATE");
-    Require.start_with("./testA.js", function(result) {
+    Require.start_with("./scripts/testA.js", function(result) {
         console.log("Index:", result);
     });
 </script>
