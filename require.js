@@ -67,35 +67,14 @@ Require.Header = function(path) {
                 text_t = texts[1];
             }
             text_t = text_t.split("\n").map(line => "    " + line).join("\n");
-
-            text = "";
-            let at = function(s) { text = text + "\n" + s; };
-            at("'use strict';");
-            at("const require = function(path) {");
-            at("    return Require.internal_require(path, header).result;");
-            at("};");
-            at("");
-            at("// Build dependency tree.");
-            at(text_h);
-            at("// Wait for upper requires to process their results.");
-            at("header.wait(function() {");
-            at("    let module = {};");
-            at("    ");
-            at("    // =============== Begin Content ===============");
-            at(text_t);
-            at("    ");
-            at("    // ================ End Content ================");
-            at("    ");
-            at("    // Pick results form module back to header.");
-            at("    for (let i in module.exports) header.result[i] = module.exports[i];");
-            at("    ");
-            at("    // Inform lower requires that this script has generated a result.");
-            at("    header.finish();");
-            at("});");
-            at("//# sourceURL=Require[" + header.path + "]");
+			
+			"use strict";
+			const require = function(path) {
+				return Require.internal_require(path, header).result;
+			};
+			text = text_h + "header.wait(function() { let module = {};" + text_t + "\nfor (let i in module.exports) header.result[i] = module.exports[i]; header.finish(); });\n//# sourceURL=Require[" + header.path + "]";
 
             eval(text);
-
         });
 };
 Require.set_read_file = function(read_file) {
